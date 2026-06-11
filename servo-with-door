@@ -1,0 +1,49 @@
+#include <Servo.h>
+
+Servo servoRacao;
+Servo servoPortinha;
+
+const int PINO_SERVO_RACAO = 9;
+const int PINO_SERVO_PORTINHA = 10;
+
+const int PORTINHA_FECHADA = 90;
+const int PORTINHA_ABERTA = 180;
+
+void acionar() {
+  // Abre a portinha 2 segundos antes
+  servoPortinha.write(PORTINHA_ABERTA);
+  Serial.println("Portinha aberta");
+  delay(2000);
+
+  // Dispensa a ração
+  servoRacao.write(80);
+  Serial.println("Racao - Posicao 80");
+  delay(10000);
+
+  servoRacao.write(89);
+  Serial.println("Racao - Posicao 89");
+
+  // Espera 2 segundos depois de dispensar
+  delay(2000);
+
+  // Fecha a portinha
+  servoPortinha.write(PORTINHA_FECHADA);
+  Serial.println("Portinha fechada");
+}
+
+void setup() {
+  Serial.begin(9600);
+
+  servoRacao.attach(PINO_SERVO_RACAO);
+  servoPortinha.attach(PINO_SERVO_PORTINHA);
+
+  servoRacao.write(89);
+  servoPortinha.write(PORTINHA_FECHADA);
+}
+
+void loop() {
+  acionar();
+
+  // Aguarda 6 horas
+  delay(21600000UL);
+}
