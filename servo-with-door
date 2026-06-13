@@ -3,11 +3,26 @@
 Servo servoRacao;
 Servo servoPortinha;
 
+// ---------------- CONFIGURAÇÕES ----------------
 const int PINO_SERVO_RACAO = 9;
 const int PINO_SERVO_PORTINHA = 10;
 
+const int POSICAO_RACAO_ATIVA = 80;
+const int POSICAO_RACAO_REPOUSO = 89;
+
 const int PORTINHA_FECHADA = 90;
 const int PORTINHA_ABERTA = 180;
+
+// Quantidade de dispensas por dia
+const int DISPENSAS_POR_DIA = 3;
+
+// Tempo que a ração será dispensada (segundos)
+const int TEMPO_DISPENSA_SEGUNDOS = 8;
+
+// Intervalo automático entre dispensas
+const unsigned long INTERVALO_ENTRE_DISPENSAS =
+    (24UL * 60UL * 60UL * 1000UL) / DISPENSAS_POR_DIA;
+// ------------------------------------------------
 
 void acionar() {
   // Abre a portinha 2 segundos antes
@@ -16,14 +31,15 @@ void acionar() {
   delay(2000);
 
   // Dispensa a ração
-  servoRacao.write(80);
-  Serial.println("Racao - Posicao 80");
-  delay(10000);
+  servoRacao.write(POSICAO_RACAO_ATIVA);
+  Serial.println("Racao - Liberando");
 
-  servoRacao.write(89);
-  Serial.println("Racao - Posicao 89");
+  delay(TEMPO_DISPENSA_SEGUNDOS * 1000UL);
 
-  // Espera 2 segundos depois de dispensar
+  servoRacao.write(POSICAO_RACAO_REPOUSO);
+  Serial.println("Racao - Finalizada");
+
+  // Aguarda 2 segundos
   delay(2000);
 
   // Fecha a portinha
@@ -37,13 +53,15 @@ void setup() {
   servoRacao.attach(PINO_SERVO_RACAO);
   servoPortinha.attach(PINO_SERVO_PORTINHA);
 
-  servoRacao.write(89);
+  servoRacao.write(POSICAO_RACAO_REPOUSO);
   servoPortinha.write(PORTINHA_FECHADA);
+
+  Serial.println("Sistema iniciado");
 }
 
 void loop() {
   acionar();
 
-  // Aguarda 6 horas
-  delay(21600000UL);
+  Serial.println("Aguardando proxima dispensa...");
+  delay(INTERVALO_ENTRE_DISPENSAS);
 }
